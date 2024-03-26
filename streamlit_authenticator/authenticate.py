@@ -3,7 +3,11 @@ import bcrypt
 import streamlit as st
 from typing import Optional
 from datetime import datetime, timedelta
-import extra_streamlit_components as stx
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../extra_streamlit_components/extra_streamlit_components'))
+import viva.frontend.extra_streamlit_components.extra_streamlit_components as stx
+# import extra_streamlit_components as stx
 
 from .hasher import Hasher
 from .validator import Validator
@@ -253,6 +257,7 @@ class Authenticate:
                                                        type='password')
 
                 if login_form.form_submit_button('Login' if 'Login' not in fields else fields['Login']):
+                    st.session_state['logout'] = False
                     self._check_credentials()
 
         return st.session_state['name'], st.session_state['authentication_status'], st.session_state['username']
@@ -261,6 +266,7 @@ class Authenticate:
         """
         Clears cookie and session state variables associated with the logged in user.
         """
+        st.session_state.page_ready = None
         self.cookie_manager.delete(self.cookie_name)
         self.credentials['usernames'][st.session_state['username']]['logged_in'] = False
         st.session_state['logout'] = True
